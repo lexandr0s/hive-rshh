@@ -1,5 +1,5 @@
 # hive-rshh
 HiveOS RemoteSSH
 ```
-curl -o /hive/sbin/hive-vpn https://raw.githubusercontent.com/lexandr0s/hive-vpn/master/hive-vpn && chmod +x /hive/sbin/hive-vpn
+curl -o /hive/sbin/hive-rssh https://raw.githubusercontent.com/lexandr0s/hive-rshh/master/hive-rssh && chmod +x /hive/sbin/hive-rssh
 ```
