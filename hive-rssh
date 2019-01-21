@@ -21,8 +21,6 @@ fi
 dpkg -s tmate > /dev/null 2>&1
 if [[ $? -ne 0 ]]; then
 	echo "Install tmate"
-	ins_str="if [[ \$PATH != *hive* ]]; then\n\tsource /etc/environment\n\texport \$(cat /etc/environment | grep -vE \"^\$|^#\" | cut -d= -f1)\nfi"
-	sed -i "/motd/i\\$ins_str" /home/user/.profile
 	add-apt-repository -y ppa:tmate.io/archive
 	apt-get update
 	apt-get -y install tmate
