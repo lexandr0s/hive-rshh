@@ -41,7 +41,7 @@ function stop_tmate {
 
 function start_tmate {
 	stop_tmate
-	[[ -f /tmp/tmate.sock ]] && rm -f /tmp/tmate.sock
+	[[ -f /tmp/*tmate.sock ]] && rm -f /tmp/*tmate.sock
 	tmate -f /hive-config/rssh.conf -S /tmp/tmate.sock new-session -d
 	ssh_string=""
 	for (( i=0; i < $try_count; i++ ))
