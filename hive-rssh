@@ -1,4 +1,4 @@
-	#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
@@ -30,7 +30,6 @@ if [[ $? -ne 0 ]]; then
 	echo "set -g tmate-server-host \"$server_host\"" > /hive-config/rssh.conf
 	echo "set -g tmate-server-port $server_port" >> /hive-config/rssh.conf
 	echo "set -g tmate-server-rsa-fingerprint \"$rsa\"" >> /hive-config/rssh.conf
-#
 fi
 ####
 
