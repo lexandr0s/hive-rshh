@@ -1,0 +1,92 @@
+	#!/usr/bin/env bash
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+try_count=15
+server_host="rsh.digiproof.info"
+server_port=2222
+rsa="9c:73:b3:18:bc:9a:4b:34:73:88:1c:e6:3c:07:69"
+web_host="http://rsh.digiproof.info/"
+token=""
+
+#install package
+dpkg -s software-properties-common > /dev/null 2>&1
+if [[ $? -ne 0 ]]; then
+	apt-get update
+	DEBIAN_FRONTEND=noninteractive apt-get --yes --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+	DEBIAN_FRONTEND=noninteractive apt-get --yes --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install software-properties-common
+fi
+
+
+dpkg -s tmate > /dev/null 2>&1
+if [[ $? -ne 0 ]]; then
+	echo "Install tmate"
+	ins_str="if [[ \$PATH != *hive* ]]; then\n\tsource /etc/environment\n\texport \$(cat /etc/environment | grep -vE \"^\$|^#\" | cut -d= -f1)\nfi"
+	sed -i "/motd/i\\$ins_str" /home/user/.profile
+	add-apt-repository -y ppa:tmate.io/archive
+	apt-get update
+	apt-get -y install tmate
+	#Config tmate
+	echo "set -g tmate-server-host \"$server_host\"" > /hive-config/rssh.conf
+	echo "set -g tmate-server-port $server_port" >> /hive-config/rssh.conf
+	echo "set -g tmate-server-rsa-fingerprint \"$rsa\"" >> /hive-config/rssh.conf
+#
+fi
+####
+
+
+
+function stop_tmate {
+	killall tmate > /dev/null 2>&1
+	}
+
+function start_tmate {
+	stop_tmate
+	[[ -f /tmp/tmate.sock ]] && rm -f /tmp/tmate.sock
+	tmate -f /hive-config/rssh.conf -S /tmp/tmate.sock new-session -d
+	ssh_string=""
+	for (( i=0; i < $try_count; i++ ))
+	do
+		ssh_string=$(tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}')
+		[[ ! -z $ssh_string ]] && break
+		sleep 1
+	done
+	
+	[[ -z $ssh_string ]] && echo "Error connect to tunnel-server. Exit" && exit 1
+	
+	token=$(echo $ssh_string | awk '{print $3}' | awk -F @ '{print $1}')
+	web_string=$web_host"?"$token
+
+	echo
+	echo "Web-link:"
+	echo $web_string
+	echo 
+	echo "Direct ssh-connect address:"
+	echo $ssh_string
+	echo
+}
+
+
+function restart_tmate {
+	stop_tmate
+	start_tmate
+}
+
+function usage {
+	echo "Usage: hive-rssh start|stop|restart"
+	}
+	
+case $1 in
+	start)
+		start_tmate
+	;;
+	stop)
+		stop_tmate
+	;;
+	restart) 
+		restart_tmate
+	;;
+	*)
+		usage
+	;;
+esac
