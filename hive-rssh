@@ -26,14 +26,14 @@ if [[ $? -ne 0 ]]; then
 	add-apt-repository -y ppa:tmate.io/archive
 	apt-get update
 	apt-get -y install tmate
-	#Config tmate
-	echo "set -g tmate-server-host \"$server_host\"" > /hive-config/rssh.conf
-	echo "set -g tmate-server-port $server_port" >> /hive-config/rssh.conf
-	echo "set -g tmate-server-rsa-fingerprint \"$rsa\"" >> /hive-config/rssh.conf
+	
 fi
 ####
 
-
+#Config tmate
+echo "set -g tmate-server-host \"$server_host\"" > /hive-config/rssh.conf
+echo "set -g tmate-server-port $server_port" >> /hive-config/rssh.conf
+echo "set -g tmate-server-rsa-fingerprint \"$rsa\"" >> /hive-config/rssh.conf
 
 function stop_tmate {
 	killall tmate > /dev/null 2>&1
