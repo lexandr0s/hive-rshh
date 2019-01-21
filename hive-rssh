@@ -36,7 +36,7 @@ echo "set -g tmate-server-port $server_port" >> /hive-config/rssh.conf
 echo "set -g tmate-server-rsa-fingerprint \"$rsa\"" >> /hive-config/rssh.conf
 
 function stop_tmate {
-	killall tmate > /dev/null 2>&1
+	killall -s 9 tmate > /dev/null 2>&1
 	}
 
 function start_tmate {
