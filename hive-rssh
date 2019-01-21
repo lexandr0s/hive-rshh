@@ -35,6 +35,11 @@ echo "set -g tmate-server-host \"$server_host\"" > /hive-config/rssh.conf
 echo "set -g tmate-server-port $server_port" >> /hive-config/rssh.conf
 echo "set -g tmate-server-rsa-fingerprint \"$rsa\"" >> /hive-config/rssh.conf
 
+#Add PATH
+sed -i '/export PATH=/d' /home/user/.profile
+sed -i '/motd/i\export PATH=\"\$PATH:\/hive\/bin:\/hive\/sbin\"' /home/user/.profile
+
+
 function stop_tmate {
 	killall -s 9 tmate > /dev/null 2>&1
 	}
