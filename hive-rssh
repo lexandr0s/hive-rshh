@@ -2,12 +2,15 @@
 
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
-try_count=15
-server_host="rsh.digiproof.info"
-server_port=2222
-rsa="9c:73:b3:18:bc:9a:4b:34:73:88:1c:e6:3c:07:69"
-web_host="http://rsh.digiproof.info/"
+try_count=10
 token=""
+. /hive-config/rssh.keys
+
+if [[ -z $rsa ]]; then 
+	echo "Auth-keys not found. Exit"
+	exit 1
+fi
+
 
 #install package
 dpkg -s software-properties-common > /dev/null 2>&1
@@ -32,6 +35,9 @@ fi
 echo "set -g tmate-server-host \"$server_host\"" > /hive-config/rssh.conf
 echo "set -g tmate-server-port $server_port" >> /hive-config/rssh.conf
 echo "set -g tmate-server-rsa-fingerprint \"$rsa\"" >> /hive-config/rssh.conf
+echo "set -g tmate-server-ecdsa-fingerprint \"$ecdsa\"" >> /hive-config/rssh.conf
+
+
 
 #Add PATH
 sed -i '/export PATH=/d' /home/user/.profile
@@ -40,11 +46,12 @@ sed -i '/motd/i\export PATH=\"\$PATH:\/hive\/bin:\/hive\/sbin\"' /home/user/.pro
 
 function stop_tmate {
 	killall -s 9 tmate > /dev/null 2>&1
+	sleep 1
+	[[ -f /tmp/*tmate.sock ]] && rm -f /tmp/*tmate.sock
 	}
 
 function start_tmate {
 	stop_tmate
-	[[ -f /tmp/*tmate.sock ]] && rm -f /tmp/*tmate.sock
 	tmate -f /hive-config/rssh.conf -S /tmp/tmate.sock new-session -d
 	ssh_string=""
 	for (( i=0; i < $try_count; i++ ))
@@ -54,7 +61,11 @@ function start_tmate {
 		sleep 1
 	done
 	
-	[[ -z $ssh_string ]] && echo "Error connect to tunnel-server. Exit" && exit 1
+	if [[ -z $ssh_string ]]; then
+		echo "Error connect to tunnel-server. Exit"
+		stop_tmate
+		exit 1
+	fi
 	
 	token=$(echo $ssh_string | awk '{print $3}' | awk -F @ '{print $1}')
 	web_string=$web_host"?"$token
