@@ -43,6 +43,11 @@ echo "set -g tmate-server-ecdsa-fingerprint \"$ecdsa\"" >> /hive-config/rssh.con
 sed -i '/export PATH=/d' /home/user/.profile
 sed -i '/motd/i\export PATH=\"\$PATH:\/hive\/bin:\/hive\/sbin\"' /home/user/.profile
 
+#Check and gen ssh-keys
+if [[ ! -f /root/.ssh/id_rsa ]]; then
+	echo -e 'y\n' | ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' > /dev/null 2>&1
+fi
+
 
 function stop_tmate {
 	killall -s 9 tmate > /dev/null 2>&1
