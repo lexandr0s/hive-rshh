@@ -88,12 +88,6 @@ function start_tmate {
 	echo
 }
 
-
-function restart_tmate {
-	stop_tmate
-	start_tmate
-}
-
 function usage {
 	echo "Usage: hive-rssh start|stop|restart"
 	}
@@ -106,7 +100,7 @@ case $1 in
 		stop_tmate
 	;;
 	restart) 
-		restart_tmate
+		start_tmate
 	;;
 	*)
 		usage
