@@ -2,7 +2,7 @@
 
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
-try_count=10
+try_count=20
 token=""
 . /hive-config/rssh.keys
 
@@ -74,7 +74,7 @@ function start_tmate {
 	do
 		ssh_string=$(tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}')
 		[[ ! -z $ssh_string ]] && break
-		sleep 1
+		sleep 5
 	done
 	
 	if [[ -z $ssh_string ]]; then
