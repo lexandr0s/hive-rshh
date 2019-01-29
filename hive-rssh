@@ -57,7 +57,7 @@ if [[ ! -f /home/user/.ssh/id_rsa ]]; then
 fi
 
 if [[ ! -f home/user/.ssh/id_ecdsa ]]; then
-	echo -e 'y\n' | ssh-keygen -f home/user/.ssh/id_ecdsa -t ecdsa -N '' > /dev/null 2>&1
+	echo -e 'y\n' | ssh-keygen -f /home/user/.ssh/id_ecdsa -t ecdsa -N '' > /dev/null 2>&1
 fi
 
 function stop_tmate {
